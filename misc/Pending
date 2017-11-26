@@ -1,0 +1,29 @@
+SE:
+
+
+1. Multiple header fields with the same name can appear in the SIP request.
+2. Empty line should be present even if SDP is not there.
+3. Request line shouldn't contain any unescaped spaces or control charecters and must not be enclosed in <>.
+4. SIP-Version	SIP/2.0 	case-insensitive but must be in upper case.	
+5. Status-Line 	no CR or LF is allowed except at the end		
+11. both long form and short form should be acceptable.			
+			
+12. text = utf-8			
+13. TCP should ignore the CRLF at the beginning of the start line			
+14. Content-Lenght is must for TCP			
+when an maddr is present, the port and transport for the URI is valid for the maddr parameter			
+if maddr is present, use this address instead of the URI one.			
+ttl should be used only if maaddr is multicast address and transport is UDP			
+
+
+---
+mandatory header fields
+
+Via
+From
+To
+Contact
+Call-ID
+Content-Length
+Content-Type
+

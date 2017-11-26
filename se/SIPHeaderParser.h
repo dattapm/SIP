@@ -7,30 +7,31 @@
 #ifndef SIPHEADERPARSER_H
 #define SIPHEADERPARSER_H
 
-
 class HeaderBase {
-
     public:
-        virtual void ParseHeader(string& hdr) = 0;
-        virtual void Print() = 0;
+        virtual void ParseHeader(string& hdr);
+        virtual void Print();
+        virtual string GetHeader();
 };
 
 class AcceptEncoding : public HeaderBase {
-   set<string> encoders;
-   set<string>::iterator it;
+   vector<string> encoders;
+   vector<string>::iterator it;
 public:
    AcceptEncoding(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class AcceptLanguage : public HeaderBase {
-   set<string> languages;
-   set<string>::iterator it;
+   vector<string> languages;
+   vector<string>::iterator it;
 public:
    AcceptLanguage(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class Accept : public HeaderBase {
@@ -40,6 +41,7 @@ public:
    Accept(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class CallID : public HeaderBase {
@@ -48,6 +50,7 @@ public:
    CallID(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class AlertInfo : public HeaderBase {
@@ -56,33 +59,37 @@ public:
    AlertInfo(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class Allow : public HeaderBase {
-   set<string> methods;
-   set<string>::iterator it;
+   vector<string> methods;
+   vector<string>::iterator it;
 public:
    Allow(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class ContentEncoding : public HeaderBase {
-   set<string> encoders;
-   set<string>::iterator it;
+   vector<string> encoders;
+   vector<string>::iterator it;
 public:
    ContentEncoding(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class ContentLanguage : public HeaderBase {
-   set<string> languages;
-   set<string>::iterator it;
+   vector<string> languages;
+   vector<string>::iterator it;
 public:
    ContentLanguage(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class ContentLength : public HeaderBase {
@@ -91,6 +98,7 @@ public:
    ContentLength(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class MaxForwards : public HeaderBase {
@@ -99,6 +107,7 @@ public:
    MaxForwards(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class Expires : public HeaderBase {
@@ -107,6 +116,7 @@ public:
    Expires(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class CSeq : public HeaderBase {
@@ -116,6 +126,7 @@ public:
    CSeq(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class MinExpires : public HeaderBase {
@@ -124,6 +135,7 @@ public:
    MinExpires(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class Subject : public HeaderBase {
@@ -132,18 +144,30 @@ public:
    Subject(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class To : public HeaderBase {
-   string address;
+   string address_spec;
    string display_name;
-   string tg_param;
+   map<string, string> params;
 public:
    To(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
+class From : public HeaderBase {
+   string address_spec;
+   string display_name;
+   map<string, string> params;
+public:
+   From(){};
+   void ParseHeader(string& hdr);
+   void Print();
+   string GetHeader();
+};
 
 class Timestamp : public HeaderBase {
    unsigned int timestamp;
@@ -151,11 +175,12 @@ public:
    Timestamp(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class Supported : public HeaderBase {
-   set<string> supported;
-   set<string>::iterator it;
+   vector<string> supported;
+   vector<string>::iterator it;
 public:
    Supported(){};
    void ParseHeader(string& hdr);
@@ -163,14 +188,13 @@ public:
 };
 
 class Unsupported : public HeaderBase {
-   set<string> unsupported;
-   set<string>::iterator it;
+   vector<string> unsupported;
+   vector<string>::iterator it;
 public:
    Unsupported(){};
    void ParseHeader(string& hdr);
    void Print();
 };
-
 
 class RetryAfter : public HeaderBase {
    unsigned long duration;
@@ -183,8 +207,8 @@ public:
 };
 
 class ProxyRequire : public HeaderBase {
-   set<string> require;
-   set<string>::iterator it;
+   vector<string> require;
+   vector<string>::iterator it;
 public:
    ProxyRequire(){};
    void ParseHeader(string& hdr);
@@ -192,12 +216,13 @@ public:
 };
 
 class Require : public HeaderBase {
-   set<string> require;
-   set<string>::iterator it;
+   vector<string> require;
+   vector<string>::iterator it;
 public:
    Require(){};
    void ParseHeader(string& hdr);
    void Print();
+   string GetHeader();
 };
 
 class Route : public HeaderBase {
@@ -218,6 +243,48 @@ public:
    void Print();
 };
 
+class Via : public HeaderBase {
+   struct via_param {
+      string sip_type;
+      string sip_version;
+      string sip_transport;
+      string sip_host;
+      string sip_port;
+      map<string, string> params;
+   };
+   
+   vector<via_param> vparam;
+   vector<via_param>::iterator it;
+public:
+   Via(){};
+   void ParseHeader(string& hdr);
+   void Print();
+   string GetHeader();
+};
+
+class Contact : public HeaderBase {
+   struct contacts {
+      string addr_spec;
+      map<string, string> params;
+   };
+   
+   vector<contacts> cparams;
+  public:
+    Contact(){};
+    void ParseHeader(string& hdr);
+    void Print();
+    string GetHeader();
+};
+
+
+class Content_Type : public HeaderBase {
+   string content_type;
+   public:
+    Content_Type(){};
+    void ParseHeader(string& hdr);
+    void Print();
+    string GetHeader();
+};
 
 #endif
 
@@ -232,7 +299,6 @@ message - header = (
 	/ Content - Type 
 	/ Date 
 	/ Error - Info 
-	/ From 
 	/ In - Reply - To 
 	/ MIME - Version 
 	/ Organization 
@@ -241,9 +307,7 @@ message - header = (
 	/ Record - Route 
 	/ Reply - To
 	/ Server 
-	/ To 
 	/ User - Agent 
-	/ Via 
 	/ Warning 
 	/ WWW - Authenticate 
 	/ extension - header) 

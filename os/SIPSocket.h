@@ -1,6 +1,10 @@
 
 #ifndef SIPSOCKET_H
-#define SAIPSOCKET_H
+#define SIPSOCKET_H
+
+#ifndef LOGGER_H
+#include "easylogging++.h"
+#endif
 
 #include<iostream>
 using namespace std;

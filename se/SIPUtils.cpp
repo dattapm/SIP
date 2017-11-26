@@ -4,6 +4,10 @@
 #include "SIP.h"
 #endif
 
+#ifndef SIPREQUEST_H
+#include "SIPRequest.h"
+#endif
+
 namespace sip_utils {
 
 	void lstrip(string& str, const string splitter) {
@@ -37,7 +41,10 @@ namespace sip_utils {
 	   return;
 	}
 
-	void tokenize(string& str, const string tokenizer, set<string>& items) {
+	void tokenize(string& str, const string tokenizer, vector<string>& items) {
+		
+	  set<string> ltokens;	
+	  
 	  size_t index = 0;
 	  string local;
 
@@ -45,25 +52,35 @@ namespace sip_utils {
 	     size_t found = str.find_first_of(tokenizer, index);
 
 	     if(found != string::npos){
-		local = str.substr(index, found - index);
-		index = found + 1;
-
-		strip(local);
-		if(!local.empty()) {
-		  items.insert(local);
-		}
+			local = str.substr(index, found - index);
+			index = found + 1;
+			
+			strip(local);
+			if(!local.empty()) {
+				if(ltokens.find(local) == ltokens.end()){
+					ltokens.insert(local);
+					items.push_back(local);
+					
+				}
+				
+			}
 	     } else {
-		local = str.substr(index);
-
-		strip(local);
-		if(!local.empty()) {
-		  items.insert(local);
-		}
-		break;
-	    }
+	     	local = str.substr(index);
+	     	
+	     	strip(local);
+	     	if(!local.empty()) {
+	     		if(ltokens.find(local) == ltokens.end()){
+	     			ltokens.insert(local);
+	     			items.push_back(local);
+	     			
+	     		}
+	     		
+	     	}
+	     	break; //otherwise it will loop infinitely.
+	     }
 	  } // end of while
-
-	 return;
+	  return;
+		
 	}
 
 	void GetKeyValuePair(string str, string separator, KeyValue& res) {
@@ -87,15 +104,46 @@ namespace sip_utils {
 
 	void GetAddress(string& hdr, string& addr) {
 	   // Remove the < and > and return only the adddress.
-           strip(hdr);
-           lstrip(hdr, LABRACKET);
-           rstrip(hdr, RABRACKET);
+        strip(hdr);
+        lstrip(hdr, LABRACKET);
+        rstrip(hdr, RABRACKET);
 
-	   KeyValue kv;
-           GetKeyValuePair(hdr, COLON, kv);
-           strip(kv.value);
+	    KeyValue kv;
+        GetKeyValuePair(hdr, COLON, kv);
+        strip(kv.value);
      
-           addr = kv.value;
+        addr = kv.value;
 	}
 
-}//end of namespace
+}
+string HdrToStringConverter(SIPHEADER hdr){
+  
+  switch(hdr){
+    
+    case VIA:
+       return "Via";
+    case FROM:
+       return "From";
+    case TO:
+       return "To";
+    case CALL_ID:
+       return "Call-ID";
+    case CSEQ:
+       return "CSeq";
+    case CONTACT:
+       return "Contact";
+    case MAX_FORWARDS:
+       return "Max-Forwards";
+    case SUBJECT:
+       return "Subject";
+    case CONTENT_TYPE:
+       return "Content-Type";
+    case CONTENT_LENGTH:
+       return "Content-Length";
+    default:
+       LOG(ERROR)<<"Unknown Header";
+    
+  }
+}
+
+//}//end of namespace

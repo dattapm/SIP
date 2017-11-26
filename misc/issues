@@ -1,0 +1,6 @@
+1. Ipv4 and IPv6 related learning.
+2. How timers operate on Unix, using timer_create.
+3. How to get req and rsp onto a queue when dealing with multiple reqs on the same socket.
+4. Integrate third party logs.
+5. Use a third party tool like 'sipp' for testing requirements.
+6. EWOULDBLOCK and EAGAIN issue on client socket.

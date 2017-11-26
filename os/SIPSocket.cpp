@@ -9,49 +9,55 @@ int CreateTCPSocket(const char* PORT) {
     bzero(&hints, sizeof(struct addrinfo));
 
     hints.ai_flags = AI_PASSIVE;
-    hints.ai_family = AF_INET6;
+    hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
 
-    /* resolve the domain name into a list of addresses */
+    // resolve the domain name into a list of addresses.
     if((n = getaddrinfo(NULL, PORT, &hints, &res)) != 0){
-       std::cout<<"error in getaddrinfo: %s"<<gai_strerror(n)<<std::endl;
+       LOG(ERROR)<<"Error in getaddrinfo: %s"<<gai_strerror(n);
        exit(EXIT_FAILURE);
     }
     ressave = res;
 
     do {
        listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-       std::cout<<"SOCKET CREATED: "<<listenfd<<" "<<res->ai_family<<" "<<res->ai_socktype<<" "<<res->ai_protocol<<std::endl;
-       if(listenfd < 0 )
+       
+       LOG(DEBUG)<<"TCP Socket created: "<<listenfd<<" "<<res->ai_family<<" "<<res->ai_socktype<<" "<<res->ai_protocol;
+       
+       if(listenfd < 0)
          continue;
 
-       /* Set socket to reuse address */
+       // Set socket to reuse address
        int flag = 1;
        if(setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) < 0){
+         LOG(ERROR)<<"TCP set socket option SO_REUSEADDR failed on socket id: "<<listenfd;
          exit(EXIT_FAILURE);
        }
        
        if(bind(listenfd, res->ai_addr, res->ai_addrlen) == 0) {
+         LOG(DEBUG)<<"TCP bind successful on socket id: "<<listenfd;
          break;
        }
 
        if(close(listenfd) < 0) {
-         std::cout<<"UNABLE TO CLOSE THE SOCKET: "<<listenfd<<std::endl;
+         LOG(ERROR)<<"Unable to close the TCP socket: "<<listenfd;
          exit(EXIT_FAILURE);
        }
 
     } while((res = res->ai_next) != NULL);
 
     if(res == NULL) {
-     std::cout<<"UNABLE TO CREATE A SOCKET"<<std::endl;
+     LOG(ERROR)<<"Unable to create a TCP socket";
+     exit(EXIT_FAILURE);
     }
 
     if(listen(listenfd, QUEUE) < 0) {
-      std::cout<<"LISTEN FAILED ON SOCKET: "<<listenfd<<std::endl;
+      LOG(ERROR)<<"TCP socket listen failed on : "<<listenfd;
       exit(EXIT_FAILURE);
-    } else {
-      std::cout<<"LISTEN SUCCESSFUL: "<<listenfd<<std::endl;
     }
+    
+    LOG(DEBUG)<<"TCP socket listen successful on : "<<listenfd;
+     
     freeaddrinfo(ressave);
 
     return listenfd;
@@ -64,36 +70,41 @@ int CreateUDPSocket(const char* PORT) {
     bzero(&hints, sizeof(struct addrinfo));
 
     hints.ai_flags = AI_PASSIVE;
-    hints.ai_family = AF_INET6;
+    hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
 
-    /* resolve the domain name into a list of addresses */
+    // resolve the domain name into a list of addresses.
     if((n = getaddrinfo(NULL, PORT, &hints, &res)) != 0){
-       std::cout<<"error in getaddrinfo: %s"<<gai_strerror(n)<<std::endl;
+       LOG(ERROR)<<"Error in getaddrinfo: %s"<<gai_strerror(n);
        exit(EXIT_FAILURE);
     }
     ressave = res;
 
     do {
        listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-       std::cout<<"SOCKET CREATED: "<<listenfd<<" "<<res->ai_family<<" "<<res->ai_socktype<<" "<<res->ai_protocol<<std::endl;
+       LOG(DEBUG)<<"UDP socket created: "<<listenfd<<" "<<res->ai_family<<" "<<res->ai_socktype<<" "<<res->ai_protocol;
+       
        if(listenfd < 0 )
          continue;
 
        if(bind(listenfd, res->ai_addr, res->ai_addrlen) == 0) {
+         LOG(DEBUG)<<"UDP bind successful on socket id: "<<listenfd;
          break;
        }
 
        if(close(listenfd) < 0) {
-         std::cout<<"UNABLE TO CLOSE THE SOCKET: "<<listenfd<<std::endl;
+         LOG(ERROR)<<"Unable to close the UDP socket: "<<listenfd;
          exit(EXIT_FAILURE);
        }
 
     } while((res = res->ai_next) != NULL);
 
     if(res == NULL) {
-     std::cout<<"UNABLE TO CREATE A SOCKET"<<std::endl;
+     LOG(ERROR)<<"Unable to create a UDP socket"<<std::endl;
     }
+    
+    LOG(DEBUG)<<"UDP socket created  successfully with socket id: "<<listenfd;
+    
     freeaddrinfo(ressave);
 
     return listenfd;

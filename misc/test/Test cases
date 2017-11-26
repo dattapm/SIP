@@ -1,0 +1,7 @@
+TN:
+
+1. Verify if TN is generating 100 response, unless TU generates in within 200 ms.
+2. Verify if all the provitional responses are sent to TR if state is in PROCEEEDING state.
+3. Verify if amy request re-transmission happens, the most recent provitional response from TU shopuld be sent back to TR.(check 17.2.3).
+4. if in PROCEEDING, any 2XX must be passed to the TR by TN for transmission.It is not retransmitted by TN.Retransmissions of 2XX are handled by TU. Change the state to TERMINATED.
+5. 
